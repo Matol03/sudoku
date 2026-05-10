@@ -1,0 +1,284 @@
+/* ─── Skin token system ─────────────────────────────────────────────────────
+   Each [data-skin] block defines the complete visual identity for that skin.
+   Font variables reference the CSS custom props that next/font injects.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Classic: letterpress broadsheet ─────────────────────────────────────── */
+[data-skin="classic"] {
+  --bg:               hsl(45 30% 96%);
+  --surface:          hsl(45 25% 98%);
+  --surface-elevated: hsl(0 0% 100%);
+  --text-primary:     hsl(30 15% 10%);
+  --text-muted:       hsl(30 10% 45%);
+  --accent:           hsl(220 60% 30%);
+  --accent-muted:     hsl(220 40% 88%);
+  --success:          hsl(155 50% 35%);
+  --error:            hsl(5 70% 48%);
+  --warning:          hsl(38 90% 48%);
+  --border:           hsl(35 20% 82%);
+
+  --board-bg:         hsl(45 28% 94%);
+  --cell-given:       hsl(30 15% 10%);
+  --cell-given-bg:    hsl(45 20% 90%);
+  --cell-selected:    hsl(220 60% 30%);
+  --cell-selected-bg: hsl(220 60% 92%);
+  --cell-peer-bg:     hsl(220 30% 96%);
+  --cell-same-bg:     hsl(220 50% 88%);
+  --cell-error-bg:    hsl(5 70% 93%);
+  --cell-hint-bg:     hsl(155 50% 90%);
+  --grid-line:        hsl(35 20% 72%);
+  --grid-line-thick:  hsl(30 25% 45%);
+
+  --radius:           2px;
+  --radius-board:     4px;
+  --radius-cell:      1px;
+  --radius-btn:       3px;
+
+  --font-numeral:     var(--font-fraunces), Georgia, serif;
+  --font-display:     var(--font-fraunces), Georgia, serif;
+  --font-ui:          var(--font-inter), system-ui, sans-serif;
+  --font-feature-settings: "onum" 1, "kern" 1;
+
+  --shadow-board:     0 2px 12px hsl(30 20% 50% / 0.15), 0 1px 3px hsl(30 20% 50% / 0.1);
+  --completion-color: hsl(220 60% 30%);
+}
+
+/* ── Dark: terminal poetry ────────────────────────────────────────────────── */
+[data-skin="dark"] {
+  --bg:               hsl(0 0% 4%);
+  --surface:          hsl(0 0% 7%);
+  --surface-elevated: hsl(0 0% 10%);
+  --text-primary:     hsl(165 30% 90%);
+  --text-muted:       hsl(165 15% 50%);
+  --accent:           hsl(165 80% 55%);
+  --accent-muted:     hsl(165 50% 15%);
+  --success:          hsl(130 60% 50%);
+  --error:            hsl(355 80% 60%);
+  --warning:          hsl(48 90% 58%);
+  --border:           hsl(0 0% 16%);
+
+  --board-bg:         hsl(0 0% 6%);
+  --cell-given:       hsl(165 30% 90%);
+  --cell-given-bg:    hsl(0 0% 10%);
+  --cell-selected:    hsl(165 80% 55%);
+  --cell-selected-bg: hsl(165 80% 10%);
+  --cell-peer-bg:     hsl(0 0% 8%);
+  --cell-same-bg:     hsl(165 60% 12%);
+  --cell-error-bg:    hsl(355 80% 12%);
+  --cell-hint-bg:     hsl(130 60% 10%);
+  --grid-line:        hsl(0 0% 18%);
+  --grid-line-thick:  hsl(165 20% 28%);
+
+  --radius:           2px;
+  --radius-board:     6px;
+  --radius-cell:      2px;
+  --radius-btn:       4px;
+
+  --font-numeral:     var(--font-geist-mono), 'Courier New', monospace;
+  --font-display:     var(--font-geist-sans), system-ui, sans-serif;
+  --font-ui:          var(--font-geist-sans), system-ui, sans-serif;
+  --font-feature-settings: "tnum" 1;
+
+  --shadow-board:     0 0 0 1px hsl(165 40% 30% / 0.3), 0 4px 24px hsl(165 80% 20% / 0.15);
+  --completion-color: hsl(165 80% 55%);
+}
+
+/* ── Kazakh: illuminated manuscript ──────────────────────────────────────── */
+[data-skin="kazakh"] {
+  --bg:               hsl(225 55% 12%);
+  --surface:          hsl(225 50% 16%);
+  --surface-elevated: hsl(225 45% 20%);
+  --text-primary:     hsl(48 80% 88%);
+  --text-muted:       hsl(225 30% 60%);
+  --accent:           hsl(48 90% 58%);
+  --accent-muted:     hsl(48 60% 18%);
+  --success:          hsl(155 55% 45%);
+  --error:            hsl(10 75% 55%);
+  --warning:          hsl(35 90% 55%);
+  --border:           hsl(225 40% 25%);
+
+  --board-bg:         hsl(225 52% 14%);
+  --cell-given:       hsl(48 80% 88%);
+  --cell-given-bg:    hsl(225 45% 20%);
+  --cell-selected:    hsl(48 90% 58%);
+  --cell-selected-bg: hsl(48 60% 13%);
+  --cell-peer-bg:     hsl(225 48% 17%);
+  --cell-same-bg:     hsl(48 50% 16%);
+  --cell-error-bg:    hsl(10 75% 14%);
+  --cell-hint-bg:     hsl(155 55% 12%);
+  --grid-line:        hsl(225 35% 28%);
+  --grid-line-thick:  hsl(48 60% 35%);
+
+  --radius:           0px;
+  --radius-board:     2px;
+  --radius-cell:      0px;
+  --radius-btn:       2px;
+
+  --font-numeral:     var(--font-cormorant), 'Times New Roman', serif;
+  --font-display:     var(--font-cormorant), 'Times New Roman', serif;
+  --font-ui:          var(--font-montserrat), system-ui, sans-serif;
+  --font-feature-settings: "kern" 1;
+
+  --shadow-board:     0 0 0 1px hsl(48 60% 35% / 0.4), 0 8px 32px hsl(225 80% 5% / 0.5);
+  --completion-color: hsl(48 90% 58%);
+}
+
+/* ── Japan: wabi-sabi studio ──────────────────────────────────────────────── */
+[data-skin="japan"] {
+  --bg:               hsl(40 18% 95%);
+  --surface:          hsl(40 15% 97%);
+  --surface-elevated: hsl(0 0% 100%);
+  --text-primary:     hsl(0 0% 8%);
+  --text-muted:       hsl(0 0% 52%);
+  --accent:           hsl(5 80% 48%);
+  --accent-muted:     hsl(5 60% 91%);
+  --success:          hsl(160 40% 38%);
+  --error:            hsl(5 80% 48%);
+  --warning:          hsl(38 85% 50%);
+  --border:           hsl(0 0% 85%);
+
+  --board-bg:         hsl(40 12% 93%);
+  --cell-given:       hsl(0 0% 8%);
+  --cell-given-bg:    hsl(40 10% 90%);
+  --cell-selected:    hsl(5 80% 48%);
+  --cell-selected-bg: hsl(5 60% 95%);
+  --cell-peer-bg:     hsl(40 8% 97%);
+  --cell-same-bg:     hsl(5 40% 92%);
+  --cell-error-bg:    hsl(5 70% 92%);
+  --cell-hint-bg:     hsl(160 40% 92%);
+  --grid-line:        hsl(0 0% 78%);
+  --grid-line-thick:  hsl(0 0% 20%);
+
+  --radius:           0px;
+  --radius-board:     0px;
+  --radius-cell:      0px;
+  --radius-btn:       0px;
+
+  --font-numeral:     var(--font-dm-serif), Georgia, serif;
+  --font-display:     var(--font-dm-serif), Georgia, serif;
+  --font-ui:          var(--font-dm-sans), system-ui, sans-serif;
+  --font-feature-settings: "kern" 1;
+
+  --shadow-board:     1px 1px 0 hsl(0 0% 70%), 2px 2px 0 hsl(0 0% 82%);
+  --completion-color: hsl(5 80% 48%);
+}
+
+/* ── Royal: leather-bound chess cabinet ───────────────────────────────────── */
+[data-skin="royal"] {
+  --bg:               hsl(345 30% 10%);
+  --surface:          hsl(345 25% 14%);
+  --surface-elevated: hsl(345 20% 18%);
+  --text-primary:     hsl(48 60% 88%);
+  --text-muted:       hsl(345 20% 55%);
+  --accent:           hsl(48 70% 58%);
+  --accent-muted:     hsl(48 40% 18%);
+  --success:          hsl(140 45% 42%);
+  --error:            hsl(0 65% 52%);
+  --warning:          hsl(38 85% 52%);
+  --border:           hsl(345 20% 24%);
+
+  --board-bg:         hsl(345 28% 12%);
+  --cell-given:       hsl(48 60% 88%);
+  --cell-given-bg:    hsl(345 20% 18%);
+  --cell-selected:    hsl(48 70% 58%);
+  --cell-selected-bg: hsl(48 50% 11%);
+  --cell-peer-bg:     hsl(345 22% 15%);
+  --cell-same-bg:     hsl(48 40% 14%);
+  --cell-error-bg:    hsl(0 65% 13%);
+  --cell-hint-bg:     hsl(140 45% 11%);
+  --grid-line:        hsl(345 18% 22%);
+  --grid-line-thick:  hsl(48 50% 30%);
+
+  --radius:           1px;
+  --radius-board:     4px;
+  --radius-cell:      1px;
+  --radius-btn:       2px;
+
+  --font-numeral:     var(--font-playfair), Georgia, serif;
+  --font-display:     var(--font-playfair), Georgia, serif;
+  --font-ui:          var(--font-eb-garamond), Georgia, serif;
+  --font-feature-settings: "smcp" 1, "kern" 1;
+
+  --shadow-board:     0 0 0 1px hsl(48 50% 30% / 0.4), inset 0 1px 0 hsl(48 60% 50% / 0.1), 0 8px 32px hsl(345 50% 4% / 0.6);
+  --completion-color: hsl(48 70% 58%);
+}
+
+/* ── Beach: sun-bleached cove ─────────────────────────────────────────────── */
+[data-skin="beach"] {
+  --bg:               hsl(42 40% 93%);
+  --surface:          hsl(42 35% 96%);
+  --surface-elevated: hsl(42 30% 98%);
+  --text-primary:     hsl(200 35% 22%);
+  --text-muted:       hsl(200 20% 50%);
+  --accent:           hsl(175 55% 42%);
+  --accent-muted:     hsl(175 40% 88%);
+  --success:          hsl(155 50% 38%);
+  --error:            hsl(8 70% 52%);
+  --warning:          hsl(35 85% 52%);
+  --border:           hsl(42 30% 82%);
+
+  --board-bg:         hsl(42 35% 90%);
+  --cell-given:       hsl(200 35% 22%);
+  --cell-given-bg:    hsl(42 30% 86%);
+  --cell-selected:    hsl(175 55% 42%);
+  --cell-selected-bg: hsl(175 55% 90%);
+  --cell-peer-bg:     hsl(42 25% 95%);
+  --cell-same-bg:     hsl(175 40% 88%);
+  --cell-error-bg:    hsl(8 70% 92%);
+  --cell-hint-bg:     hsl(155 50% 90%);
+  --grid-line:        hsl(42 25% 75%);
+  --grid-line-thick:  hsl(200 25% 45%);
+
+  --radius:           8px;
+  --radius-board:     16px;
+  --radius-cell:      6px;
+  --radius-btn:       999px;
+
+  --font-numeral:     var(--font-nunito), 'Arial Rounded MT Bold', sans-serif;
+  --font-display:     var(--font-nunito), 'Arial Rounded MT Bold', sans-serif;
+  --font-ui:          var(--font-inter), system-ui, sans-serif;
+  --font-feature-settings: "kern" 1;
+
+  --shadow-board:     0 4px 24px hsl(200 30% 40% / 0.12), 0 1px 4px hsl(200 30% 40% / 0.08);
+  --completion-color: hsl(175 55% 42%);
+}
+
+/* ── Aurora: boreal observatory (Pro) ─────────────────────────────────────── */
+[data-skin="aurora"] {
+  --bg:               hsl(235 45% 8%);
+  --surface:          hsl(235 40% 11%);
+  --surface-elevated: hsl(235 35% 15%);
+  --text-primary:     hsl(200 30% 92%);
+  --text-muted:       hsl(235 20% 55%);
+  --accent:           hsl(160 70% 55%);
+  --accent-muted:     hsl(160 50% 13%);
+  --success:          hsl(140 60% 50%);
+  --error:            hsl(340 80% 60%);
+  --warning:          hsl(48 90% 58%);
+  --border:           hsl(235 30% 20%);
+
+  --board-bg:         hsl(235 42% 9%);
+  --cell-given:       hsl(200 30% 92%);
+  --cell-given-bg:    hsl(235 35% 15%);
+  --cell-selected:    hsl(160 70% 55%);
+  --cell-selected-bg: hsl(160 60% 9%);
+  --cell-peer-bg:     hsl(235 38% 12%);
+  --cell-same-bg:     hsl(280 40% 13%);
+  --cell-error-bg:    hsl(340 80% 11%);
+  --cell-hint-bg:     hsl(140 60% 9%);
+  --grid-line:        hsl(235 25% 20%);
+  --grid-line-thick:  hsl(270 40% 35%);
+
+  --radius:           4px;
+  --radius-board:     12px;
+  --radius-cell:      3px;
+  --radius-btn:       6px;
+
+  --font-numeral:     var(--font-instrument), Georgia, serif;
+  --font-display:     var(--font-instrument), Georgia, serif;
+  --font-ui:          var(--font-geist-sans), system-ui, sans-serif;
+  --font-feature-settings: "kern" 1;
+
+  --shadow-board:     0 0 0 1px hsl(270 40% 35% / 0.3), 0 0 40px hsl(160 70% 30% / 0.15), 0 8px 32px hsl(235 80% 4% / 0.6);
+  --completion-color: hsl(160 70% 55%);
+}
