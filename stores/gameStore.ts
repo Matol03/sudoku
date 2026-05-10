@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Grid, Cell, Digit, GameCell, Puzzle, HintStep } from '@/lib/sudoku/types'
-import { ALL_PEERS } from '@/lib/sudoku/solver'
+import { ALL_PEERS, solve } from '@/lib/sudoku/solver'
 import { getHintSteps } from '@/lib/sudoku/hintSystem'
 
 export interface MoveRecord {
@@ -42,6 +42,7 @@ interface GameState {
   resumeTimer: () => void
   requestHint: () => HintStep | null
   dismissHintUpsell: () => void
+  loadCustomPuzzle: (givens: Grid) => boolean
   reset: () => void
 }
 
@@ -285,6 +286,35 @@ export const useGameStore = create<GameState>()(
       },
 
       dismissHintUpsell: () => set({ showHintUpsell: false }),
+
+      loadCustomPuzzle: (givens) => {
+        const solution = solve([...givens])
+        if (!solution) return false
+        const puzzle: Puzzle = {
+          id: `custom-${Date.now()}`,
+          givens: [...givens] as Grid,
+          solution: solution as Grid,
+          difficulty: 'medium',
+          techniqueTags: [],
+        }
+        set({
+          puzzle,
+          cells: buildInitialCells(puzzle),
+          selectedCell: null,
+          isNotesMode: false,
+          mistakeCount: 0,
+          hintsUsed: 0,
+          timeElapsed: 0,
+          isRunning: true,
+          isComplete: false,
+          history: [],
+          historyIndex: -1,
+          hintSteps: [],
+          hintStepIndex: 0,
+          showHintUpsell: false,
+        })
+        return true
+      },
 
       reset: () => set(state => {
         if (!state.puzzle) return {}

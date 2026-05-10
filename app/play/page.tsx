@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bot } from 'lucide-react'
 import { Board } from '@/components/game/Board'
@@ -10,15 +11,38 @@ import { DifficultySelector } from '@/components/game/DifficultySelector'
 import { AITrainer } from '@/components/game/AITrainer'
 import { SkinSwitcher } from '@/components/game/SkinSwitcher'
 import { Nav } from '@/components/Nav'
+import { OnboardingTour, hasTourBeenSeen } from '@/components/OnboardingTour'
 import { useGameStore } from '@/stores/gameStore'
 import { generatePuzzle } from '@/lib/sudoku/generator'
-import type { Difficulty } from '@/lib/sudoku/types'
+import type { Difficulty, Grid } from '@/lib/sudoku/types'
+
+function SharedPuzzleLoader({ onLoad }: { onLoad: (givens: Grid) => void }) {
+  const searchParams = useSearchParams()
+  const param = searchParams.get('puzzle')
+
+  useEffect(() => {
+    if (param && /^\d{81}$/.test(param)) {
+      onLoad(param.split('').map(Number) as Grid)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [param])
+
+  return null
+}
 
 export default function PlayPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium')
   const [isGenerating, setIsGenerating] = useState(false)
   const [trainerOpen, setTrainerOpen] = useState(false)
-  const { setPuzzle, puzzle, requestHint, showHintUpsell, dismissHintUpsell } = useGameStore()
+  const [showTour, setShowTour] = useState(false)
+  const { setPuzzle, puzzle, requestHint, showHintUpsell, dismissHintUpsell, loadCustomPuzzle } = useGameStore()
+
+  // Trigger tour once, the first time a puzzle becomes active
+  useEffect(() => {
+    if (puzzle && !hasTourBeenSeen()) {
+      setShowTour(true)
+    }
+  }, [puzzle])
 
   const startNewGame = useCallback(async (difficulty: Difficulty) => {
     setIsGenerating(true)
@@ -38,6 +62,11 @@ export default function PlayPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
       <Nav />
+
+      {/* Load puzzle from ?puzzle= URL param */}
+      <Suspense>
+        <SharedPuzzleLoader onLoad={loadCustomPuzzle} />
+      </Suspense>
 
       <main className="flex-1 flex flex-col items-center justify-start md:justify-center gap-5 px-4 py-5">
         <AnimatePresence mode="wait">
@@ -107,7 +136,9 @@ export default function PlayPage() {
 
               <div className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)] mt-1">
                 <div className="flex items-center gap-2">
-                  <SkinSwitcher />
+                  <span data-tour="skin-switcher">
+                    <SkinSwitcher />
+                  </span>
                   <button
                     onClick={() => startNewGame(selectedDifficulty)}
                     className="text-xs px-3 py-1.5 rounded-[var(--radius-btn)]"
@@ -118,6 +149,7 @@ export default function PlayPage() {
                 </div>
 
                 <button
+                  data-tour="ai-trainer-btn"
                   onClick={() => setTrainerOpen(true)}
                   className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[var(--radius-btn)]"
                   style={{
@@ -183,6 +215,8 @@ export default function PlayPage() {
       </AnimatePresence>
 
       <AITrainer isOpen={trainerOpen} onClose={() => setTrainerOpen(false)} />
+
+      {showTour && <OnboardingTour onDone={() => setShowTour(false)} />}
     </div>
   )
 }

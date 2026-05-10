@@ -24,6 +24,7 @@ function AtelierLogo() {
 const NAV_LINKS = [
   { href: '/play', label: 'Play' },
   { href: '/play/daily', label: 'Daily' },
+  { href: '/construct', label: 'Create' },
   { href: '/stats', label: 'Stats' },
   { href: '/skins', label: 'Skins' },
 ]

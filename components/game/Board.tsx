@@ -117,6 +117,7 @@ export function Board() {
         ref={boardRef}
         role="grid"
         aria-label="Sudoku board"
+        data-tour="board"
         className="relative"
         style={{
           display: 'grid',

@@ -53,6 +53,7 @@ export function NumberPad({ onHint }: NumberPadProps) {
           label={isNotesMode ? 'Notes On' : 'Notes'}
           icon={<Pencil size={16} />}
           active={isNotesMode}
+          tourId="notes-btn"
         />
         <ActionBtn
           onClick={clearCell}
@@ -69,11 +70,12 @@ export function NumberPad({ onHint }: NumberPadProps) {
           onClick={onHint}
           label={`Hint ${hintsUsed}/${FREE_HINTS}`}
           icon={<Lightbulb size={16} />}
+          tourId="hint-btn"
         />
       </div>
 
       {/* Digit grid */}
-      <div className="grid grid-cols-9 gap-1">
+      <div data-tour="numberpad" className="grid grid-cols-9 gap-1">
         {DIGITS.map(digit => (
           <DigitButton
             key={digit}
@@ -122,18 +124,21 @@ function ActionBtn({
   icon,
   disabled = false,
   active = false,
+  tourId,
 }: {
   onClick?: () => void
   label: string
   icon: React.ReactNode
   disabled?: boolean
   active?: boolean
+  tourId?: string
 }) {
   return (
     <motion.button
       onClick={onClick}
       disabled={disabled}
       whileTap={disabled ? {} : { scale: 0.93 }}
+      data-tour={tourId}
       className="flex flex-col items-center gap-1 flex-1 py-2 rounded-[var(--radius-btn)]"
       style={{
         background: active ? 'var(--accent-muted)' : 'var(--surface)',
