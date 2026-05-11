@@ -22,7 +22,7 @@ const STEPS: TourStep[] = [
   {
     target: null,
     position: 'center',
-    title: 'Welcome to Sudoku Atelier',
+    title: 'Welcome to Sudoku Master',
     body: "A precision-crafted Sudoku experience. Let's walk through the controls — takes about 30 seconds.",
   },
   {

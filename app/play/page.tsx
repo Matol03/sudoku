@@ -26,16 +26,29 @@ const OnboardingTour = dynamic(
   { ssr: false }
 )
 
-function SharedPuzzleLoader({ onLoad }: { onLoad: (givens: Grid) => void }) {
+const VALID_DIFFICULTIES: Difficulty[] = ['beginner', 'easy', 'medium', 'hard', 'expert', 'master']
+
+function SharedPuzzleLoader({
+  onLoadPuzzle,
+  onStartDifficulty,
+}: {
+  onLoadPuzzle: (givens: Grid) => void
+  onStartDifficulty: (d: Difficulty) => void
+}) {
   const searchParams = useSearchParams()
-  const param = searchParams.get('puzzle')
+  const puzzleParam = searchParams.get('puzzle')
+  const diffParam = searchParams.get('d')
 
   useEffect(() => {
-    if (param && /^\d{81}$/.test(param)) {
-      onLoad(param.split('').map(Number) as Grid)
+    if (puzzleParam && /^\d{81}$/.test(puzzleParam)) {
+      onLoadPuzzle(puzzleParam.split('').map(Number) as Grid)
+      return
+    }
+    if (diffParam && (VALID_DIFFICULTIES as string[]).includes(diffParam)) {
+      onStartDifficulty(diffParam as Difficulty)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [param])
+  }, [puzzleParam, diffParam])
 
   return null
 }
@@ -74,9 +87,12 @@ export default function PlayPage() {
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
       <Nav />
 
-      {/* Load puzzle from ?puzzle= URL param */}
+      {/* Load puzzle from ?puzzle= or ?d= URL params */}
       <Suspense>
-        <SharedPuzzleLoader onLoad={loadCustomPuzzle} />
+        <SharedPuzzleLoader
+          onLoadPuzzle={loadCustomPuzzle}
+          onStartDifficulty={(d) => { setSelectedDifficulty(d); startNewGame(d) }}
+        />
       </Suspense>
 
       <main className="flex-1 flex flex-col items-center justify-start md:justify-center gap-5 px-4 py-5">

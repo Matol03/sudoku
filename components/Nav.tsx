@@ -43,7 +43,7 @@ export function Nav() {
           className="font-display hidden sm:block"
           style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}
         >
-          Sudoku Atelier
+          Sudoku Master
         </span>
       </Link>
 

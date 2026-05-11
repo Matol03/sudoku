@@ -9,8 +9,8 @@ import {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s — Sudoku Atelier',
-    default: "Sudoku Atelier — The thinking person's Sudoku",
+    template: '%s — Sudoku Master',
+    default: "Sudoku Master — The thinking person's Sudoku",
   },
   description: 'A premium Sudoku experience with AI coaching, beautiful skins, and daily challenges.',
   keywords: ['sudoku', 'puzzle', 'brain training', 'daily puzzle'],
