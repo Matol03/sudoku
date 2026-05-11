@@ -4,7 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { signUp, signInWithGoogle } from '@/lib/supabase/auth'
+import { signUp, signInWithGoogle, clearLocalAuthCache } from '@/lib/supabase/auth'
+
+// Detect the browser fetch error caused by corrupted Supabase auth state in
+// localStorage/cookies. The browser refuses headers containing codepoints
+// outside ISO-8859-1, so we offer a "Reset session" recovery action.
+function isStaleAuthError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false
+  return /non ISO-8859-1|String contains.*code point/i.test(err.message)
+}
 
 function GoogleIcon() {
   return (
@@ -26,9 +34,12 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [verifyEmail, setVerifyEmail] = useState(false)
 
+  const [staleAuth, setStaleAuth] = useState(false)
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setStaleAuth(false)
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters.')
@@ -36,26 +47,53 @@ export default function SignupPage() {
     }
 
     setLoading(true)
-    const { data, error } = await signUp(email, password, username || undefined)
-    setLoading(false)
+    try {
+      const { data, error } = await signUp(email, password, username || undefined)
+      setLoading(false)
 
-    if (error) {
-      setError(error.message)
-      return
-    }
+      if (error) {
+        setError(error.message)
+        return
+      }
 
-    // If email confirmation is required, show verify message
-    if (data.user && !data.session) {
-      setVerifyEmail(true)
-    } else {
-      router.push('/play')
+      if (data.user && !data.session) {
+        setVerifyEmail(true)
+      } else {
+        router.push('/play')
+      }
+    } catch (err) {
+      setLoading(false)
+      if (isStaleAuthError(err)) {
+        setStaleAuth(true)
+        setError('Your session data is corrupted. Click "Reset session" below to fix.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      }
     }
+  }
+
+  function handleResetSession() {
+    clearLocalAuthCache()
+    setStaleAuth(false)
+    setError(null)
+    // Reload to fully re-init the Supabase client with clean state
+    window.location.reload()
   }
 
   async function handleGoogle() {
     setError(null)
-    const { error } = await signInWithGoogle()
-    if (error) setError(error.message)
+    setStaleAuth(false)
+    try {
+      const { error } = await signInWithGoogle()
+      if (error) setError(error.message)
+    } catch (err) {
+      if (isStaleAuthError(err)) {
+        setStaleAuth(true)
+        setError('Your session data is corrupted. Click "Reset session" below to fix.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Sign-in failed.')
+      }
+    }
   }
 
   const inputStyle = {
@@ -177,15 +215,29 @@ export default function SignupPage() {
 
                 <AnimatePresence>
                   {error && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="text-sm px-3 py-2 rounded-[var(--radius-btn)]"
-                      style={{ background: 'var(--cell-error-bg)', color: 'var(--error)' }}
+                      className="flex flex-col gap-2"
                     >
-                      {error}
-                    </motion.p>
+                      <p
+                        className="text-sm px-3 py-2 rounded-[var(--radius-btn)]"
+                        style={{ background: 'var(--cell-error-bg)', color: 'var(--error)' }}
+                      >
+                        {error}
+                      </p>
+                      {staleAuth && (
+                        <button
+                          type="button"
+                          onClick={handleResetSession}
+                          className="text-xs py-2 px-3 rounded-[var(--radius-btn)] font-medium"
+                          style={{ background: 'var(--accent)', color: 'white', border: 'none', cursor: 'pointer' }}
+                        >
+                          Reset session and retry
+                        </button>
+                      )}
+                    </motion.div>
                   )}
                 </AnimatePresence>
 

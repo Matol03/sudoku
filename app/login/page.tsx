@@ -8,9 +8,15 @@ import {
   signInWithPassword,
   signInWithMagicLink,
   signInWithGoogle,
+  clearLocalAuthCache,
 } from '@/lib/supabase/auth'
 
 type Mode = 'password' | 'magic'
+
+function isStaleAuthError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false
+  return /non ISO-8859-1|String contains.*code point/i.test(err.message)
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -20,30 +26,57 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [staleAuth, setStaleAuth] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setStaleAuth(false)
     setLoading(true)
 
-    if (mode === 'magic') {
-      const { error } = await signInWithMagicLink(email)
-      if (error) setError(error.message)
-      else setSent(true)
-    } else {
-      const { error } = await signInWithPassword(email, password)
-      if (error) setError(error.message)
-      else router.push('/play')
+    try {
+      if (mode === 'magic') {
+        const { error } = await signInWithMagicLink(email)
+        if (error) setError(error.message)
+        else setSent(true)
+      } else {
+        const { error } = await signInWithPassword(email, password)
+        if (error) setError(error.message)
+        else router.push('/play')
+      }
+    } catch (err) {
+      if (isStaleAuthError(err)) {
+        setStaleAuth(true)
+        setError('Your session data is corrupted. Click "Reset session" below to fix.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Sign-in failed.')
+      }
+    } finally {
+      setLoading(false)
     }
+  }
 
-    setLoading(false)
+  function handleResetSession() {
+    clearLocalAuthCache()
+    setStaleAuth(false)
+    setError(null)
+    window.location.reload()
   }
 
   async function handleGoogle() {
     setError(null)
-    const { error } = await signInWithGoogle()
-    if (error) setError(error.message)
-    // On success the browser navigates to Supabase OAuth → /auth/callback → /play
+    setStaleAuth(false)
+    try {
+      const { error } = await signInWithGoogle()
+      if (error) setError(error.message)
+    } catch (err) {
+      if (isStaleAuthError(err)) {
+        setStaleAuth(true)
+        setError('Your session data is corrupted. Click "Reset session" below to fix.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Sign-in failed.')
+      }
+    }
   }
 
   const inputStyle = {
@@ -158,15 +191,29 @@ export default function LoginPage() {
 
                 <AnimatePresence>
                   {error && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="text-sm px-3 py-2 rounded-[var(--radius-btn)]"
-                      style={{ background: 'var(--cell-error-bg)', color: 'var(--error)' }}
+                      className="flex flex-col gap-2"
                     >
-                      {error}
-                    </motion.p>
+                      <p
+                        className="text-sm px-3 py-2 rounded-[var(--radius-btn)]"
+                        style={{ background: 'var(--cell-error-bg)', color: 'var(--error)' }}
+                      >
+                        {error}
+                      </p>
+                      {staleAuth && (
+                        <button
+                          type="button"
+                          onClick={handleResetSession}
+                          className="text-xs py-2 px-3 rounded-[var(--radius-btn)] font-medium"
+                          style={{ background: 'var(--accent)', color: 'white', border: 'none', cursor: 'pointer' }}
+                        >
+                          Reset session and retry
+                        </button>
+                      )}
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
