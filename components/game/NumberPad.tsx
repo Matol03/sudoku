@@ -33,7 +33,7 @@ export function NumberPad({ onHint }: NumberPadProps) {
   const FREE_HINTS = 5
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-[min(min(90vw,90vh-200px),480px)]">
+    <div className="flex flex-col gap-3 w-full max-w-[min(min(var(--board-max-w,90vw),90vh-200px),480px)]">
       {/* Control row */}
       <div className="flex items-center justify-between gap-2">
         <ActionBtn

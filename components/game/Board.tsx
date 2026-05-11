@@ -123,7 +123,9 @@ export function Board() {
           display: 'grid',
           gridTemplateColumns: 'repeat(9, 1fr)',
           gridTemplateRows: 'repeat(9, 1fr)',
-          width: 'min(min(90vw, 90vh - 200px), 480px)',
+          // Outer container can override --board-max-w (e.g. when a side
+          // action column is shown). Default keeps the original sizing.
+          width: 'min(min(var(--board-max-w, 90vw), 90vh - 200px), 480px)',
           aspectRatio: '1',
           background: 'var(--board-bg)',
           borderRadius: 'var(--radius-board)',

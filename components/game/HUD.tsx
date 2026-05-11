@@ -22,7 +22,7 @@ export function HUD() {
 
   return (
     <div
-      className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)] px-1 gap-2"
+      className="flex items-center justify-between w-full max-w-[min(min(var(--board-max-w,90vw),90vh-200px),480px)] px-1 gap-2"
       role="status"
       aria-live="polite"
     >

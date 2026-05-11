@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bot } from 'lucide-react'
+import { Bot, RotateCcw } from 'lucide-react'
 import { Board } from '@/components/game/Board'
 import { NumberPad } from '@/components/game/NumberPad'
 import { HUD } from '@/components/game/HUD'
@@ -27,6 +27,37 @@ const OnboardingTour = dynamic(
 )
 
 const VALID_DIFFICULTIES: Difficulty[] = ['beginner', 'easy', 'medium', 'hard', 'expert', 'master']
+
+// ── Side-column action button ──────────────────────────────────────────────
+function SideAction({
+  icon, label, onClick, primary = false, ...rest
+}: {
+  icon: React.ReactNode
+  label: string
+  onClick: () => void
+  primary?: boolean
+} & Record<string, unknown>) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="flex items-center justify-center rounded-[var(--radius-btn)]"
+      style={{
+        width: 36,
+        height: 36,
+        background: primary ? 'var(--accent-muted)' : 'var(--surface)',
+        border: `1px solid ${primary ? 'var(--accent)' : 'var(--border)'}`,
+        color: primary ? 'var(--accent)' : 'var(--text-muted)',
+        cursor: 'pointer',
+        transition: 'background 0.15s, color 0.15s',
+      }}
+      {...rest}
+    >
+      {icon}
+    </button>
+  )
+}
 
 function SharedPuzzleLoader({
   onLoadPuzzle,
@@ -176,43 +207,38 @@ export default function PlayPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-4 w-full"
+              className="flex flex-col items-center gap-3 w-full"
+              // Reserve space on the right for the side-action column. CSS
+              // var is consumed by Board, HUD and NumberPad widths.
+              style={{ ['--board-max-w' as string]: 'calc(100vw - 76px)' }}
             >
-              <div className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)]">
-                <HUD />
-              </div>
-
-              <Board />
-              <NumberPad onHint={handleHint} />
-
-              <div className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)] mt-1">
-                <div className="flex items-center gap-2">
-                  <span data-tour="skin-switcher">
-                    <SkinSwitcher />
-                  </span>
-                  <button
-                    onClick={() => startNewGame(selectedDifficulty)}
-                    className="text-xs px-3 py-1.5 rounded-[var(--radius-btn)]"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'none', cursor: 'pointer' }}
-                  >
-                    New
-                  </button>
+              <div className="flex items-start gap-2 sm:gap-3 w-full justify-center">
+                {/* Game column */}
+                <div className="flex flex-col items-center gap-3 min-w-0">
+                  <HUD />
+                  <Board />
+                  <NumberPad onHint={handleHint} />
                 </div>
 
-                <button
-                  data-tour="ai-trainer-btn"
-                  onClick={() => setTrainerOpen(true)}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[var(--radius-btn)]"
-                  style={{
-                    background: 'var(--accent-muted)',
-                    border: '1px solid var(--accent)',
-                    color: 'var(--accent)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Bot size={12} />
-                  AI Trainer
-                </button>
+                {/* Side action column — always visible, no scrolling needed */}
+                <div className="flex flex-col gap-2 pt-[60px] sm:pt-[70px] flex-shrink-0">
+                  <SideAction
+                    data-tour="ai-trainer-btn"
+                    icon={<Bot size={16} />}
+                    label="AI Trainer"
+                    primary
+                    onClick={() => setTrainerOpen(true)}
+                  />
+                  <SideAction
+                    icon={<RotateCcw size={16} />}
+                    label="New game"
+                    onClick={() => startNewGame(selectedDifficulty)}
+                  />
+                  {/* SkinSwitcher already renders its own button; just wrap for tour anchor */}
+                  <span data-tour="skin-switcher" className="block">
+                    <SkinSwitcher />
+                  </span>
+                </div>
               </div>
             </motion.div>
           )}

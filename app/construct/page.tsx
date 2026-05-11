@@ -8,7 +8,7 @@ import { useUser } from '@/lib/hooks/useUser'
 import { solve, hasUniqueSolution } from '@/lib/sudoku/solver'
 import { detectTechniques } from '@/lib/sudoku/techniqueDetector'
 import type { Grid, Difficulty, SolvingTechnique } from '@/lib/sudoku/types'
-import { Sparkles, CheckCircle2, XCircle, Share2, Trash2, Copy, Check, Loader2 } from 'lucide-react'
+import { Sparkles, CheckCircle2, XCircle, Share2, Trash2, Copy, Check, Loader2, Lock } from 'lucide-react'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,53 +33,6 @@ type ValidationState =
   | { status: 'validating' }
   | { status: 'valid'; difficulty: Difficulty }
   | { status: 'invalid'; reason: string }
-
-// ── Pro gate ─────────────────────────────────────────────────────────────────
-
-function ProGate() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center justify-center flex-1 py-20 gap-5 text-center px-4"
-    >
-      <div
-        className="w-14 h-14 rounded-[var(--radius-board)] flex items-center justify-center"
-        style={{ background: 'var(--accent)' }}
-      >
-        <Sparkles size={24} color="white" />
-      </div>
-      <div>
-        <h2
-          className="font-display font-bold mb-2"
-          style={{ fontSize: '22px', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
-        >
-          Constructor Mode is Pro
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: 360, lineHeight: 1.6 }}>
-          Create your own Sudoku puzzles, validate them for a unique solution,
-          get a difficulty rating, and share them via a link anyone can play.
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <Link
-          href="/pricing"
-          className="px-5 py-2.5 rounded-[var(--radius-btn)] text-sm font-semibold"
-          style={{ background: 'var(--accent)', color: 'white' }}
-        >
-          Unlock Pro — $4.99/mo
-        </Link>
-        <Link
-          href="/play"
-          className="px-5 py-2.5 rounded-[var(--radius-btn)] text-sm"
-          style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
-        >
-          Back to Play
-        </Link>
-      </div>
-    </motion.div>
-  )
-}
 
 // ── main page ─────────────────────────────────────────────────────────────────
 
@@ -199,21 +152,35 @@ export default function ConstructPage() {
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
       <Nav />
 
-      {!isPro ? (
-        <ProGate />
-      ) : (
-        <main className="flex-1 flex flex-col items-center gap-6 px-4 py-8">
+      <main className="flex-1 flex flex-col items-center gap-5 sm:gap-6 px-4 py-6 sm:py-8">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1
-              className="font-display font-bold mb-1"
-              style={{ fontSize: 'clamp(26px, 4vw, 36px)', color: 'var(--text-primary)', letterSpacing: '-0.025em' }}
-            >
-              Constructor Mode
-            </h1>
+            <div className="inline-flex items-center gap-2 mb-3">
+              <h1
+                className="font-display font-bold"
+                style={{ fontSize: 'clamp(26px, 4vw, 36px)', color: 'var(--text-primary)', letterSpacing: '-0.025em' }}
+              >
+                Constructor Mode
+              </h1>
+              {!isPro && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full"
+                  style={{
+                    background: 'var(--accent-muted)',
+                    color: 'var(--accent)',
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  <Sparkles size={9} />
+                  PRO TO SHARE
+                </span>
+              )}
+            </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
               Click a cell, then type 1–9 to place a digit. Backspace to erase.
             </p>
@@ -354,7 +321,8 @@ export default function ConstructPage() {
                   </div>
                 </div>
 
-                {shareUrl && (
+                {shareUrl && (isPro ? (
+                  // ─── Pro: full play + share UI ──────────────────────────
                   <div className="w-full flex flex-col gap-2">
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>
                       Share your puzzle
@@ -395,7 +363,54 @@ export default function ConstructPage() {
                       </Link>
                     </div>
                   </div>
-                )}
+                ) : (
+                  // ─── Free: Pro upsell for play + share ──────────────────
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full p-4 sm:p-5 rounded-[var(--radius-board)] flex flex-col items-center gap-3 text-center"
+                    style={{
+                      background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))',
+                      border: '1.5px solid color-mix(in srgb, var(--accent) 35%, transparent)',
+                    }}
+                  >
+                    <div
+                      className="flex items-center justify-center rounded-full"
+                      style={{ width: 40, height: 40, background: 'var(--accent)', color: 'white' }}
+                    >
+                      <Lock size={18} />
+                    </div>
+                    <div>
+                      <p
+                        className="font-display font-semibold mb-1"
+                        style={{ fontSize: '15px', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}
+                      >
+                        Nice puzzle. Pro to play or share.
+                      </p>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, maxWidth: 360 }}>
+                        Your puzzle is valid and saved in this session. Upgrade to play
+                        it yourself or share it with friends via a public link.
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Link
+                        href="/pricing"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-[var(--radius-btn)] text-sm font-semibold"
+                        style={{ background: 'var(--accent)', color: 'white', textDecoration: 'none' }}
+                      >
+                        <Sparkles size={14} />
+                        Upgrade to Pro
+                      </Link>
+                      <Link
+                        href="/play"
+                        className="flex-1 sm:flex-none flex items-center justify-center px-5 py-2.5 rounded-[var(--radius-btn)] text-sm"
+                        style={{ border: '1px solid var(--border)', color: 'var(--text-muted)', textDecoration: 'none' }}
+                      >
+                        Back to Play
+                      </Link>
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
             )}
 
@@ -437,8 +452,7 @@ export default function ConstructPage() {
               <li>Click Validate — it checks for a unique solution automatically.</li>
             </ul>
           </motion.div>
-        </main>
-      )}
+      </main>
     </div>
   )
 }
