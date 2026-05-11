@@ -2,19 +2,29 @@
 
 import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bot } from 'lucide-react'
 import { Board } from '@/components/game/Board'
 import { NumberPad } from '@/components/game/NumberPad'
 import { HUD } from '@/components/game/HUD'
 import { DifficultySelector } from '@/components/game/DifficultySelector'
-import { AITrainer } from '@/components/game/AITrainer'
 import { SkinSwitcher } from '@/components/game/SkinSwitcher'
 import { Nav } from '@/components/Nav'
-import { OnboardingTour, hasTourBeenSeen } from '@/components/OnboardingTour'
+import { hasTourBeenSeen } from '@/components/OnboardingTour'
 import { useGameStore } from '@/stores/gameStore'
-import { generatePuzzle } from '@/lib/sudoku/generator'
+import { generatePuzzleAsync } from '@/lib/sudoku/workerClient'
 import type { Difficulty, Grid } from '@/lib/sudoku/types'
+
+// Lazy-load heavy components — they only mount when actually needed
+const AITrainer = dynamic(
+  () => import('@/components/game/AITrainer').then(m => ({ default: m.AITrainer })),
+  { ssr: false }
+)
+const OnboardingTour = dynamic(
+  () => import('@/components/OnboardingTour').then(m => ({ default: m.OnboardingTour })),
+  { ssr: false }
+)
 
 function SharedPuzzleLoader({ onLoad }: { onLoad: (givens: Grid) => void }) {
   const searchParams = useSearchParams()
@@ -47,9 +57,10 @@ export default function PlayPage() {
   const startNewGame = useCallback(async (difficulty: Difficulty) => {
     setIsGenerating(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 0))
-      const newPuzzle = generatePuzzle(difficulty)
+      const newPuzzle = await generatePuzzleAsync(difficulty)
       setPuzzle(newPuzzle)
+    } catch (err) {
+      console.error('Puzzle generation failed:', err)
     } finally {
       setIsGenerating(false)
     }
@@ -73,21 +84,30 @@ export default function PlayPage() {
           {!puzzle ? (
             <motion.div
               key="start"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center gap-8 w-full max-w-md pt-8"
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+              className="flex flex-col items-center gap-7 w-full max-w-md pt-6"
             >
               <div className="text-center">
-                <h1
+                <motion.h1
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
                   className="font-display mb-2"
-                  style={{ fontSize: 'clamp(32px, 5vw, 48px)', color: 'var(--text-primary)', fontWeight: 700, letterSpacing: '-0.025em' }}
+                  style={{ fontSize: 'clamp(34px, 5vw, 52px)', color: 'var(--text-primary)', fontWeight: 700, letterSpacing: '-0.028em', lineHeight: 1.05 }}
                 >
                   New Game
-                </h1>
-                <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  style={{ color: 'var(--text-muted)', fontSize: '15px' }}
+                >
                   Choose a difficulty to begin.
-                </p>
+                </motion.p>
               </div>
 
               <DifficultySelector
@@ -99,17 +119,32 @@ export default function PlayPage() {
               <motion.button
                 onClick={() => startNewGame(selectedDifficulty)}
                 disabled={isGenerating}
-                whileTap={{ scale: 0.97 }}
-                className="w-full py-4 rounded-[var(--radius-btn)] font-display font-semibold text-lg"
+                whileTap={{ scale: 0.98 }}
+                whileHover={isGenerating ? {} : { y: -1, boxShadow: '0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent)' }}
+                transition={{ type: 'spring', stiffness: 380, damping: 22 }}
+                className="w-full py-4 rounded-[var(--radius-btn)] font-display font-semibold text-lg relative overflow-hidden"
                 style={{
                   background: 'var(--accent)',
                   color: 'white',
                   border: 'none',
                   cursor: isGenerating ? 'wait' : 'pointer',
-                  opacity: isGenerating ? 0.7 : 1,
+                  opacity: isGenerating ? 0.75 : 1,
+                  boxShadow: '0 2px 10px color-mix(in srgb, var(--accent) 25%, transparent)',
                 }}
               >
-                {isGenerating ? 'Generating…' : 'Start Puzzle'}
+                {isGenerating ? (
+                  <span className="inline-flex items-center gap-2">
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                      className="inline-block"
+                      style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: 'white', borderRadius: '50%' }}
+                    />
+                    Generating…
+                  </span>
+                ) : (
+                  'Start Puzzle'
+                )}
               </motion.button>
 
               <div className="flex items-center gap-4">
