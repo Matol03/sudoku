@@ -22,22 +22,22 @@ export function HUD() {
 
   return (
     <div
-      className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)] px-1"
+      className="flex items-center justify-between w-full max-w-[min(min(90vw,90vh-200px),480px)] px-1 gap-2"
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col">
-        <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <div className="flex flex-col min-w-0">
+        <span style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           Difficulty
         </span>
-        <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600 }} className="font-display">
+        <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600 }} className="font-display truncate">
           {formatDifficulty(puzzle.difficulty)}
         </span>
       </div>
 
       <Timer />
 
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <Stat label="Mistakes" value={mistakeCount} />
         <Stat label="Hints" value={hintsUsed} />
       </div>
@@ -48,7 +48,7 @@ export function HUD() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center">
-      <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <span style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
         {label}
       </span>
       <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>

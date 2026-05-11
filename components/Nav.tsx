@@ -47,7 +47,8 @@ export function Nav() {
         </span>
       </Link>
 
-      <nav className="flex items-center gap-0.5" aria-label="Main navigation">
+      {/* Desktop nav links — hidden on mobile to prevent overflow */}
+      <nav className="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
         {NAV_LINKS.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
           return (
@@ -74,7 +75,28 @@ export function Nav() {
         })}
       </nav>
 
-      <div className="flex items-center gap-2">
+      {/* Mobile compact nav — horizontally scrollable, icon-y links */}
+      <nav className="flex md:hidden items-center gap-0.5 overflow-x-auto -mx-2 px-2 scrollbar-hide" aria-label="Main navigation">
+        {NAV_LINKS.map(({ href, label }) => {
+          const isActive = pathname === href || pathname.startsWith(href + '/')
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="relative px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap flex-shrink-0"
+              style={{
+                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                fontWeight: isActive ? 600 : 500,
+                background: isActive ? 'var(--accent-muted)' : 'transparent',
+              }}
+            >
+              {label}
+            </Link>
+          )
+        })}
+      </nav>
+
+      <div className="flex items-center gap-1.5 flex-shrink-0">
         <Link
           href="/pricing"
           className="hidden sm:flex items-center gap-1 px-3 py-1.5 text-sm rounded-[var(--radius-btn)] font-medium relative overflow-hidden group"
@@ -98,7 +120,7 @@ export function Nav() {
         </Link>
         <Link
           href="/login"
-          className="px-3 py-1.5 text-sm rounded-[var(--radius-btn)] transition-colors hover:bg-[var(--surface-elevated)]"
+          className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-[var(--radius-btn)] transition-colors hover:bg-[var(--surface-elevated)] whitespace-nowrap"
           style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
         >
           Sign in

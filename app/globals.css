@@ -62,3 +62,18 @@ body {
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Utility used in the mobile nav strip */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Mobile-friendly tap behaviour: no double-tap-to-zoom, larger tap target on small screens */
+button, [role="button"], a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Safari from zooming when an input is focused (requires font-size >= 16px) */
+@media (max-width: 640px) {
+  input, textarea, select { font-size: 16px; }
+}
