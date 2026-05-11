@@ -26,18 +26,18 @@ export function HUD() {
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col min-w-0">
-        <span style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <div className="flex flex-col min-w-0 items-start">
+        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
           Difficulty
         </span>
-        <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600 }} className="font-display truncate">
+        <span className="font-display truncate text-[13px] sm:text-[14px] font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
           {formatDifficulty(puzzle.difficulty)}
         </span>
       </div>
 
       <Timer />
 
-      <div className="flex gap-3 sm:gap-4">
+      <div className="flex gap-2.5 sm:gap-4 flex-shrink-0">
         <Stat label="Mistakes" value={mistakeCount} />
         <Stat label="Hints" value={hintsUsed} />
       </div>
@@ -48,10 +48,13 @@ export function HUD() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center">
-      <span style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <span className="text-[9px] sm:text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
         {label}
       </span>
-      <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+      <span
+        className="text-[13px] sm:text-[14px] font-semibold leading-tight"
+        style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}
+      >
         {value}
       </span>
     </div>

@@ -126,7 +126,7 @@ export default function PlayPage() {
         />
       </Suspense>
 
-      <main className="flex-1 flex flex-col items-center justify-start md:justify-center gap-5 px-4 py-5">
+      <main className="flex-1 flex flex-col items-center justify-start md:justify-center gap-5 px-2 sm:px-4 py-3 sm:py-5">
         <AnimatePresence mode="wait">
           {!puzzle ? (
             <motion.div
@@ -220,8 +220,9 @@ export default function PlayPage() {
                   <NumberPad onHint={handleHint} />
                 </div>
 
-                {/* Side action column — always visible, no scrolling needed */}
-                <div className="flex flex-col gap-2 pt-[60px] sm:pt-[70px] flex-shrink-0">
+                {/* Side action column — aligns vertically with the top of the Board.
+                    HUD height is ~38px (mobile) / ~42px (desktop), plus 12px gap. */}
+                <div className="flex flex-col gap-2 pt-[50px] sm:pt-[56px] flex-shrink-0">
                   <SideAction
                     data-tour="ai-trainer-btn"
                     icon={<Bot size={16} />}
@@ -234,9 +235,11 @@ export default function PlayPage() {
                     label="New game"
                     onClick={() => startNewGame(selectedDifficulty)}
                   />
-                  {/* SkinSwitcher already renders its own button; just wrap for tour anchor */}
-                  <span data-tour="skin-switcher" className="block">
-                    <SkinSwitcher />
+                  {/* Skin chooser — icon-only square button matching the column.
+                      placement="top-right" so the dropdown opens upward and is
+                      right-aligned, keeping it on-screen near the viewport edge. */}
+                  <span data-tour="skin-switcher" className="inline-block">
+                    <SkinSwitcher iconOnly placement="top-right" />
                   </span>
                 </div>
               </div>

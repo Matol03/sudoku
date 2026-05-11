@@ -235,6 +235,7 @@ export default function ConstructPage() {
                   {isSelected && (
                     <NumberPicker
                       current={value}
+                      cellIndex={index}
                       onPick={(d) => handleCellDigit(index, d)}
                     />
                   )}
@@ -461,30 +462,45 @@ export default function ConstructPage() {
 
 function NumberPicker({
   current,
+  cellIndex,
   onPick,
 }: {
   current: number
+  cellIndex: number
   onPick: (d: number) => void
 }) {
+  // Smart placement: pop UP if cell is in lower half of the board, DOWN otherwise.
+  // Pop LEFT if cell is in right half, RIGHT otherwise. Keeps it on-screen.
+  const row = Math.floor(cellIndex / 9)
+  const col = cellIndex % 9
+  const popUp   = row >= 4
+  const popLeft = col >= 5
+
+  const vertical = popUp
+    ? { bottom: '100%', marginBottom: 4 }
+    : { top:    '100%', marginTop:    4 }
+  const horizontal = popLeft
+    ? { right: 0 }
+    : { left:  0 }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-      className="absolute z-10"
+      className="absolute z-30"
       style={{
         background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 10,
-        boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+        boxShadow: '0 6px 28px rgba(0,0,0,0.22)',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 3,
+        gap: 4,
         padding: 6,
-        width: 96,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
+        width: 132,
+        ...vertical,
+        ...horizontal,
       }}
       onClick={e => e.stopPropagation()}
     >
@@ -492,16 +508,18 @@ function NumberPicker({
         <button
           key={d}
           onMouseDown={e => { e.preventDefault(); onPick(d) }}
+          onTouchStart={e => { e.preventDefault(); onPick(d) }}
           style={{
-            width: 26,
-            height: 26,
-            borderRadius: 5,
+            width: 36,
+            height: 36,
+            borderRadius: 6,
             border: 'none',
             background: current === d ? 'var(--accent)' : 'var(--surface-elevated)',
             color: current === d ? 'white' : 'var(--text-primary)',
-            fontSize: 13,
+            fontSize: 15,
             fontWeight: 600,
             cursor: 'pointer',
+            fontFamily: 'var(--font-numeral, inherit)',
           }}
         >
           {d}
