@@ -3,18 +3,17 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 function AtelierLogo() {
   return (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
       <rect width="28" height="28" rx="5" fill="var(--accent)" />
-      {/* 3×3 grid */}
       <line x1="9.33" y1="5" x2="9.33" y2="23" stroke="white" strokeWidth="1" opacity="0.4"/>
       <line x1="18.67" y1="5" x2="18.67" y2="23" stroke="white" strokeWidth="1" opacity="0.4"/>
       <line x1="5" y1="9.33" x2="23" y2="9.33" stroke="white" strokeWidth="1" opacity="0.4"/>
       <line x1="5" y1="18.67" x2="23" y2="18.67" stroke="white" strokeWidth="1" opacity="0.4"/>
-      {/* Maker mark in center cell */}
       <circle cx="14" cy="14" r="2.2" fill="white" opacity="0.9" />
       <circle cx="14" cy="14" r="1.1" fill="var(--accent)" />
     </svg>
@@ -31,6 +30,22 @@ const NAV_LINKS = [
 
 export function Nav() {
   const pathname = usePathname()
+  const [user, setUser] = useState<{ email: string; name: string } | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUser({
+          email: data.user.email ?? '',
+          name: data.user.user_metadata?.full_name
+            ?? data.user.user_metadata?.name
+            ?? data.user.email?.split('@')[0]
+            ?? 'Account',
+        })
+      }
+    })
+  }, [])
 
   return (
     <header
@@ -47,7 +62,6 @@ export function Nav() {
         </span>
       </Link>
 
-      {/* Desktop nav links — hidden on mobile to prevent overflow */}
       <nav className="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
         {NAV_LINKS.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -75,7 +89,6 @@ export function Nav() {
         })}
       </nav>
 
-      {/* Mobile compact nav — horizontally scrollable, icon-y links */}
       <nav className="flex md:hidden items-center gap-0.5 overflow-x-auto -mx-2 px-2 scrollbar-hide" aria-label="Main navigation">
         {NAV_LINKS.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -118,13 +131,24 @@ export function Nav() {
             transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
           />
         </Link>
-        <Link
-          href="/login"
-          className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-[var(--radius-btn)] transition-colors hover:bg-[var(--surface-elevated)] whitespace-nowrap"
-          style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
-        >
-          Sign in
-        </Link>
+
+        {user ? (
+          <Link
+            href="/account"
+            className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-[var(--radius-btn)] transition-colors hover:bg-[var(--surface-elevated)] whitespace-nowrap"
+            style={{ color: 'var(--text-primary)', border: '1px solid var(--border)' }}
+          >
+            {user.name}
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-[var(--radius-btn)] transition-colors hover:bg-[var(--surface-elevated)] whitespace-nowrap"
+            style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </header>
   )
