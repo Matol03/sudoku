@@ -11,7 +11,9 @@ import { HUD } from '@/components/game/HUD'
 const DifficultySelector = dynamic(
   () => import('@/components/game/DifficultySelector').then(m => ({ default: m.DifficultySelector })),
   { ssr: false }
-)import { SkinSwitcher } from '@/components/game/SkinSwitcher'
+)
+
+import { SkinSwitcher } from '@/components/game/SkinSwitcher'
 import { Nav } from '@/components/Nav'
 import { hasTourBeenSeen } from '@/components/OnboardingTour'
 import { useGameStore } from '@/stores/gameStore'
