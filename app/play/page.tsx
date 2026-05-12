@@ -8,8 +8,10 @@ import { Bot, RotateCcw } from 'lucide-react'
 import { Board } from '@/components/game/Board'
 import { NumberPad } from '@/components/game/NumberPad'
 import { HUD } from '@/components/game/HUD'
-import { DifficultySelector } from '@/components/game/DifficultySelector'
-import { SkinSwitcher } from '@/components/game/SkinSwitcher'
+const DifficultySelector = dynamic(
+  () => import('@/components/game/DifficultySelector').then(m => ({ default: m.DifficultySelector })),
+  { ssr: false }
+)import { SkinSwitcher } from '@/components/game/SkinSwitcher'
 import { Nav } from '@/components/Nav'
 import { hasTourBeenSeen } from '@/components/OnboardingTour'
 import { useGameStore } from '@/stores/gameStore'
