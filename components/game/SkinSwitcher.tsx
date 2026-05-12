@@ -31,7 +31,7 @@ const DROPDOWN_POS: Record<Placement, string> = {
   'bottom-right': 'top-full mt-2 right-0',
 }
 
-export function SkinSwitcher({ placement = 'bottom-left', compact = false, iconOnly = false }: Props) {
+export function SkinSwitcher({ placement = 'top-left', compact = false, iconOnly = false }: Props) {
   const [open, setOpen] = useState(false)
   const { activeSkin, setSkin, canUseSkin } = useSkinStore()
 
