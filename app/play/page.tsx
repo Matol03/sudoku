@@ -239,7 +239,7 @@ export default function PlayPage() {
                       placement="top-right" so the dropdown opens upward and is
                       right-aligned, keeping it on-screen near the viewport edge. */}
                   <span data-tour="skin-switcher" className="inline-block">
-                    <SkinSwitcher iconOnly placement="top-right" />
+                    <SkinSwitcher iconOnly placement="bottom-left" />
                   </span>
                 </div>
               </div>
