@@ -1,150 +1,80 @@
-# Sudoku Atelier
+# Sudoku Master
 
-> "The thinking person's Sudoku."
+### 1. Никаких барьеров на старте
 
-A premium, market-differentiated Sudoku web application with AI coaching, seven hand-designed skins, and a full Stripe monetization layer.
+Чтобы играть и пользовалться сайтом регистрация необязательна. Человек может начать игру, но чтобы сохранить прогресс нужно зарегистрироваться.
+Легко можно начать играть. Игру можно начать в один клик через Landing page выбрав предпочитаемую сложность.
+При этом интерфейс адаптивен для мобильных устройств, чтобы было удобно пользоваться с телефона.
 
----
+### 2. Обучение которое учит
 
-## Tech stack
+При начале игры пользователь проходит через интерактивный туториал. Таким образом стразу становиться понятно как пользоваться сайтом.
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router) + React 19 + TypeScript strict |
-| Styling | Tailwind CSS v4 + CSS variables (per-skin tokens) |
-| Animation | Framer Motion (spring physics throughout) |
-| State | Zustand (game) + TanStack Query (server) |
-| Database & Auth | Supabase (Postgres + RLS + Auth) |
-| Payments | Stripe (Checkout + Customer Portal + Webhooks) |
-| AI Trainer | Anthropic Claude Sonnet (streamed) |
-| Fonts | next/font/google — 9 typefaces, skin-specific |
+Во время игры можно поставить заметки на клетку, использовать 5 подсказок (безлимит разблокируется через подписку), попросить помощь у AI тренера который прокоментирует текущее положение.
 
----
+Шесть уровней сложности: Начинающий, Лёгкий, Средний, Сложный, Эксперт, Мастер.
 
-## Setup
+Мгновенная обратная связь об ошибках, неверно поставленные цифры сразу подсвечиваются чтобы вы учились на каждой ошибке.
 
-### 1. Clone and install
+Умные подсказки - подсказка проводит вас через следующий логический шаг: определяет область, указывает на ячейку и затем ставит цифру. 5 бесплатных подсказок в день, безлимитно в Pro.
 
-```bash
-git clone <repo-url>
-cd sudoku-atelier
-npm install
-```
+ИИ-тренер (иконка справа сверху от доски) - тренер в выдвижной боковой панели. Видит текущее состояние доски и обучает технике, никогда не выдавая готового ответа.
 
-### 2. Environment variables
+Статистика - кол-во решенных ежедневных головоломок, процент побед, текущая и самая длинная серия, лучшее время по сложностям, тепловая карта активности в стиле Leetcode за последние 365 дней, а также разбивка освоения техник (подсчёт каждого успешно применённого вами приёма решения).
 
-```bash
-cp .env.example .env.local
-```
+### 3. Сама игра
 
-Fill in all values — see `.env.example` for comments.
+Во время игры есть возможность поменять сложность или скин.
+Автосохранение на каждом ходу - прогресс сохраняется при перезагрузке через localStorage, даже без аккаунта; войдите, чтобы синхронизировать между устройствами.
+Режим заметок - проставляйте кандидатов без подтверждения.
+Ежедневная головоломка - одна специально составленная головоломка, обновляющаяся каждое утро.
 
-### 3. Supabase
+Каждый скин — это полноценное визуальное окружение, а не просто перекраска: разная типографика, стили рамок, анимации завершения и характер:
 
-1. Create a project at supabase.com
-2. In your Supabase dashboard SQL Editor, paste and run: `lib/supabase/migrations/001_initial.sql`
-3. Copy your project URL and anon key into `.env.local`
-4. Enable Google OAuth in Supabase Auth → Providers if desired
+| Скин | Уровень | Идентичность |
+|---|---|---|
+| Classic | Бесплатный | Тёплая кремовая бумага, глубокие чернила цвета navy, цифры с засечками, элегантность высокой печати |
+| Dark | Бесплатный | Настоящий чёрный для OLED, акцент цвета фосфорно-голубого, моноширинный шрифт, для ночных сессий |
+| Kazakh | Бесплатный | Глубокий синий и золотой, национальные орнаментальные мотивы |
+| Japan | Бесплатный | Текстура рисовой бумаги васи, тушь суми, единственный киноварный акцент |
+| Royal | Бесплатный | Чёрный и золотой, богатая акцидентная типографика |
+| Beach | $2.99 разовый платёж | Выгоревшие на солнце пастельные тона, анимация волн при завершении |
+| Aurora | Эксклюзив Pro | Глубокое ночное небо с переливающимся зелёным градиентом северного сияния |
 
-### 4. Stripe (test mode)
+### 4. Режим создателя (создание бесплатно, публикация c Pro подпиской)
 
-1. Create a Stripe account and stay in test mode
-2. Create these Products and Prices in your dashboard:
-   - **Pro Monthly**: recurring, $4.99/month → `STRIPE_PRICE_PRO_MONTHLY`
-   - **Pro Yearly**: recurring, $39/year → `STRIPE_PRICE_PRO_YEARLY`
-   - **Beach Skin**: one-time, $2.99 → `STRIPE_PRICE_BEACH_SKIN`
-3. Forward webhooks locally:
-   ```bash
-   stripe listen --forward-to localhost:3000/api/stripe/webhook
-   ```
-   Copy the signing secret to `STRIPE_WEBHOOK_SECRET`
+Любой может создавать собственные судоку на чистом холсте конструктора (включая бесплатных пользователей).  
+Проверка уникальности решения в один клик плюс автоматическая оценка сложности, вычисляемая на основе того, какие техники решения реально требует головоломка.  
+Чтобы играть и делиться своим творением, нужен Pro. Пользователи Pro получают публичную ссылку /play?puzzle=... для копирования и отправки друзьям; бесплатные пользователи видят ясное предложение перехода на Pro с подтверждением, что их головоломка корректна.
 
-**Test card numbers:**
-| Scenario | Card |
-|---|---|
-| Success | 4242 4242 4242 4242 |
-| Decline | 4000 0000 0000 0002 |
-| 3D Secure | 4000 0027 6000 3184 |
+#### Это превращает опытных игроков в создателей контента и запускает вирусную петлю: каждая расшаренная головоломка — бесплатный канал привлечения пользователей.
 
-Use any future expiry and any 3-digit CVC.
+### 5. Бизнес-модель
 
-### 5. Anthropic
+Тарифы
 
-Get an API key from console.anthropic.com and set `ANTHROPIC_API_KEY`.
+| Тариф | Цена | Стратегия |
+|---|---|---|
+| Free | $0 навсегда | Все 6 сложностей · 5 бесплатных скинов · 5 подсказок/день · Персональная статистика · Ежедневная головоломка · Конструктор: создание и проверка · Аккаунт не требуется |
+| Pro Monthly | $4.99 / месяц | Всё, что ниже |
+| Pro Yearly | $39 / год | Экономия 35%, идеальный тариф для преданных игроков |
+| Beach skin | $2.99 разовый платёж | Отдельная покупка для тех, кто хочет один премиальный образ без подписки |
 
-### 6. Seed the database
+Pro открывает: безлимитные подсказки, ИИ-тренера, скины Beach и Aurora, все будущие скины автоматически, доступ к публикации и игре в режиме создателя, глобальную таблицу лидеров ежедневной головоломки, продвинутую статистику.
 
-```bash
-npx tsx scripts/seed.ts
-```
+### 6. Cтруктура проекта
 
-### 7. Run
-
-```bash
-npm run dev
-```
-
-Open http://localhost:3000
-
----
-
-## Project structure
-
-```
 app/
-  (marketing)/page.tsx     Landing page
-  play/page.tsx            Game board
-  play/daily/page.tsx      Daily puzzle
-  stats/page.tsx           Statistics dashboard
-  skins/page.tsx           Skin gallery and store
-  pricing/page.tsx         Pricing + Stripe links
-  login/page.tsx           Auth
-  api/
-    ai-trainer/route.ts    Streamed Claude responses
-    stripe/webhook/route.ts
+(marketing)/page.tsx Landing page
+play/page.tsx Game board
+play/daily/page.tsx Daily puzzle
+stats/page.tsx Statistics dashboard
+skins/page.tsx Skin gallery and store
+login/page.tsx Auth
+api/
+ai-trainer/route.ts Streamed Claude responses
 
-components/game/           Board, Cell, NumberPad, Timer, HUD, AITrainer, SkinSwitcher
-lib/sudoku/                Generator, solver, technique detector, Web Worker
-lib/supabase/              Client, server, types, migrations
-stores/                    gameStore (Zustand), skinStore (Zustand)
-styles/themes.css          All 7 skin token sets
-```
-
----
-
-## Skin system
-
-Each skin is defined as a [data-skin="id"] block in styles/themes.css — ~25 CSS custom properties.
-Switching is instant: document.documentElement.setAttribute('data-skin', id).
-
-| Skin | Numerals | UI | Notes |
-|---|---|---|---|
-| Classic | Fraunces (oldstyle) | Inter | Free |
-| Dark | Geist Mono | Geist Sans | Free |
-| Kazakh | Cormorant Garamond | Montserrat | Free |
-| Japan | DM Serif Display | DM Sans | Free |
-| Royal | Playfair Display | EB Garamond | Free |
-| Beach | Nunito | Inter | $2.99 one-time |
-| Aurora | Instrument Serif | Geist Sans | Pro only |
-
----
-
-## Sudoku engine
-
-Built from scratch in lib/sudoku/:
-
-- **Generator**: backtracking + Fisher-Yates shuffle + 180deg rotational symmetry + uniqueness check
-- **Solver**: MRV (minimum remaining values) backtracking
-- **Technique detector**: Naked single/pair/triple, Hidden single/pair, Pointing pair, Box-line reduction, X-Wing
-- **Hint system**: Progressive 4-step hints (region → technique → cell → digit), 5/day free
-- **Web Worker**: lib/sudoku/worker.ts — generation off main thread
-
----
-
-## Stripe integration
-
-- `checkout.session.completed`: grants Pro or Beach skin based on Price ID
-- `customer.subscription.updated`: syncs subscription status and period end
-- `customer.subscription.deleted`: downgrades to free
-
-All stored on `profiles.subscription_status` with Supabase RLS.
+components/game/ Board, Cell, NumberPad, Timer, HUD, AITrainer, SkinSwitcher
+lib/sudoku/ Generator, solver, technique detector, Web Worker
+lib/supabase/ Client, server, types, migrations
+styles/themes.css All 7 skin token sets
