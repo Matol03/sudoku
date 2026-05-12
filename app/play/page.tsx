@@ -268,7 +268,7 @@ export default function PlayPage() {
                 You've used all 5 free hints for today. Upgrade to Pro for unlimited hints, an AI trainer that teaches technique, and all current and future skins.
               </p>
               <div className="flex flex-col gap-2">
-                
+                <a
                   href="/pricing"
                   className="flex items-center justify-center py-2.5 rounded-[var(--radius-btn)] font-semibold text-sm"
                   style={{ background: 'var(--accent)', color: 'white' }}
