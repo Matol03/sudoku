@@ -25,6 +25,7 @@ const OnboardingTour = dynamic(
   () => import('@/components/OnboardingTour').then(m => ({ default: m.OnboardingTour })),
   { ssr: false }
 )
+const [difficultyOpen, setDifficultyOpen] = useState(false)
 
 const VALID_DIFFICULTIES: Difficulty[] = ['beginner', 'easy', 'medium', 'hard', 'expert', 'master']
 
@@ -235,6 +236,11 @@ export default function PlayPage() {
                     label="New game"
                     onClick={() => startNewGame(selectedDifficulty)}
                   />
+                   <SideAction
+                      icon={<span style={{ fontSize: '11px', fontWeight: 700 }}>D</span>}
+                      label="Change difficulty"
+                      onClick={() => setDifficultyOpen(true)}
+                   />
                   {/* Skin chooser — icon-only square button matching the column.
                       placement="top-right" so the dropdown opens upward and is
                       right-aligned, keeping it on-screen near the viewport edge. */}
@@ -293,6 +299,54 @@ export default function PlayPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Difficulty picker modal */}
+<AnimatePresence>
+  {difficultyOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ background: 'rgba(0,0,0,0.5)' }}
+      onClick={() => setDifficultyOpen(false)}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        onClick={e => e.stopPropagation()}
+        className="w-full max-w-sm p-6 rounded-[var(--radius-board)]"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <h2 className="font-display font-bold mb-4" style={{ fontSize: '22px', color: 'var(--text-primary)' }}>
+          Change Difficulty
+        </h2>
+        <DifficultySelector
+          selected={selectedDifficulty}
+          onChange={setSelectedDifficulty}
+          loading={isGenerating}
+        />
+        <div className="flex flex-col gap-2 mt-4">
+          <button
+            onClick={() => { startNewGame(selectedDifficulty); setDifficultyOpen(false) }}
+            disabled={isGenerating}
+            className="flex items-center justify-center py-2.5 rounded-[var(--radius-btn)] font-semibold text-sm"
+            style={{ background: 'var(--accent)', color: 'white', border: 'none', cursor: isGenerating ? 'wait' : 'pointer' }}
+          >
+            {isGenerating ? 'Generating…' : 'Start New Game'}
+          </button>
+          <button
+            onClick={() => setDifficultyOpen(false)}
+            className="py-2.5 rounded-[var(--radius-btn)] text-sm"
+            style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       <AITrainer isOpen={trainerOpen} onClose={() => setTrainerOpen(false)} />
 
